@@ -16,10 +16,12 @@
 
 package com.android.settings.cyanogenmod;
 
+import android.app.ActivityManagerNative;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.os.RemoteException;
 import android.os.SystemProperties;
 import android.preference.PreferenceManager;
 import android.util.Log;
@@ -54,6 +56,10 @@ public class BootReceiver extends BroadcastReceiver {
             } else {
                 SystemProperties.set(KSM_SETTINGS_PROP, "false");
             }
+        }
+
+        if (SystemProperties.getInt("persist.sys.procs_limit", -1) != -1) {
+            configureMaxBgProcLimit();
         }
     }
 
@@ -104,5 +110,16 @@ public class BootReceiver extends BroadcastReceiver {
 
         Utils.fileWriteOneLine(MemoryManagement.KSM_RUN_FILE, ksm ? "1" : "0");
         Log.d(TAG, "KSM settings restored.");
+    }
+
+    private void configureMaxBgProcLimit() {
+        int procLimit = SystemProperties.getInt("persist.sys.procs_limit", -1);
+        try {
+            if (procLimit != -1) {
+                ActivityManagerNative.getDefault().setProcessLimit(procLimit);
+                Log.i(TAG, "Forcing max background processes to " + procLimit);
+            }
+        } catch (RemoteException e) {
+        }
     }
 }

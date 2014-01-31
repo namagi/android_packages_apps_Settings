@@ -43,6 +43,7 @@ import android.preference.PreferenceScreen;
 import android.preference.Preference.OnPreferenceChangeListener;
 import android.provider.Settings;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.IWindowManager;
 
 /*
@@ -78,7 +79,7 @@ public class DevelopmentSettings extends PreferenceFragment
     private static final String IMMEDIATELY_DESTROY_ACTIVITIES_KEY
             = "immediately_destroy_activities";
     private static final String APP_PROCESS_LIMIT_KEY = "app_process_limit";
-
+    private static final String APP_PROCESS_LIMIT_PROPERTY = "persist.sys.procs_limit";
     private static final String SHOW_ALL_ANRS_KEY = "show_all_anrs";
 
     private static final String KILL_APP_LONGPRESS_BACK = "kill_app_longpress_back";
@@ -429,7 +430,8 @@ public class DevelopmentSettings extends PreferenceFragment
 
     private void updateAppProcessLimitOptions() {
         try {
-            int limit = ActivityManagerNative.getDefault().getProcessLimit();
+            int sys_limit = ActivityManagerNative.getDefault().getProcessLimit();
+            int limit = SystemProperties.getInt(APP_PROCESS_LIMIT_PROPERTY, sys_limit);
             CharSequence[] values = mAppProcessLimit.getEntryValues();
             for (int i=0; i<values.length; i++) {
                 int val = Integer.parseInt(values[i].toString());
@@ -449,6 +451,7 @@ public class DevelopmentSettings extends PreferenceFragment
         try {
             int limit = Integer.parseInt(newValue.toString());
             ActivityManagerNative.getDefault().setProcessLimit(limit);
+            SystemProperties.set(APP_PROCESS_LIMIT_PROPERTY, newValue.toString());
             updateAppProcessLimitOptions();
         } catch (RemoteException e) {
         }

@@ -667,6 +667,9 @@
         <item>At most 2 processes</item>
         <item>At most 3 processes</item>
         <item>At most 4 processes</item>
+        <item>At most 5 processes</item>
+        <item>At most 6 processes</item>
+        <item>At most 7 processes</item>
     </string-array>
 
     <!-- Values for app process limit preference. -->
@@ -677,6 +680,9 @@
         <item>2</item>
         <item>3</item>
         <item>4</item>
+        <item>5</item>
+        <item>6</item>
+        <item>7</item>
     </string-array>
 
     <!-- Match this with the constants in VpnProfile. --> <skip />
